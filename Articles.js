@@ -11,31 +11,32 @@ async function fetchRandomNews() {
       const data = await response.json();
       return data.articles;
    } catch (error) {
-      console.error("Error Fetching Random news", error);
+      console.error("Error fetching random news", error);
       return [];
    }
 }
 
-searchButton.addEventListener("click" , async ()=>{
-   const query = searchField.value.trim()
-   if(query !== ""){
-      try{
-const articles = await fetchNewsQuery(query)
-displayBlogs(articles)
-      }catch(error){
-         console.log("Error Fetching news by query",error)
+searchButton.addEventListener("click", async () => {
+   const query = searchField.value.trim();
+   if (query !== "") {
+      try {
+         const articles = await fetchNewsQuery(query);
+         displayBlogs(articles);
+      } catch (error) {
+         console.error("Error fetching news by query", error);
       }
    }
-})
-async function fetchNewsQuery(query){
+});
+
+async function fetchNewsQuery(query) {
    try {
       const apiURL = `https://newsapi.org/v2/everything?q=${query}&pageSize=10&apiKey=${apiKey}`;
       const response = await fetch(apiURL);
       const data = await response.json();
       return data.articles;
    } catch (error) {
-      console.error("Error Fetching Random news", error);
-      return [];  
+      console.error("Error fetching news by query", error);
+      return [];
    }
 }
 
@@ -46,7 +47,7 @@ function displayBlogs(articles) {
       blogCard.classList.add("blog-card");
 
       const img = document.createElement("img");
-      img.src = article.urlToImage;
+      img.src = article.urlToImage || "default-image.jpg";
       img.alt = article.title;
 
       const title = document.createElement("h2");
@@ -54,18 +55,22 @@ function displayBlogs(articles) {
          ? article.title.slice(0, 30) + "...."
          : article.title;
       title.textContent = truncatedTitle;
-      const discription = document.createElement("p");
-      const truncatedDes = article.description.length > 120
+
+      const description = document.createElement("p");
+      const truncatedDescription = article.description && article.description.length > 120
          ? article.description.slice(0, 120) + "...."
-         : article.discription;
-discription.textContent = truncatedDes;
+         : article.description || "No description available.";
+      description.textContent = truncatedDescription;
+
       blogCard.appendChild(img);
       blogCard.appendChild(title);
-      blogCard.appendChild(discription);
-      blogCard.addEventListener("click", ()=>{
+      blogCard.appendChild(description);
+
+      blogCard.addEventListener("click", () => {
          window.open(article.url, "_blank");
-      })
-      blogContainer.appendChild(blogCard); // Append blogCard to blogContainer
+      });
+
+      blogContainer.appendChild(blogCard);
    });
 }
 
@@ -74,6 +79,6 @@ discription.textContent = truncatedDes;
       const articles = await fetchRandomNews();
       displayBlogs(articles);
    } catch (error) {
-      console.error("Error Fetching Random news", error);
+      console.error("Error fetching random news", error);
    }
 })();
